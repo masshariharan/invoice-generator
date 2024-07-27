@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "470791593094",
+    "project_id": "invoice-generator-895ed",
+    "storage_bucket": "invoice-generator-895ed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:470791593094:android:e868cc9e138cdfd3c64507",
+        "android_client_info": {
+          "package_name": "com.app.invoice_generator"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeEFFRn2pRU5CSyokrJ8zr2sNIuUvj0o8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
