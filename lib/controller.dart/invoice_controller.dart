@@ -104,9 +104,8 @@ class InvoiceController extends ChangeNotifier {
 
   void signout(context) async {
     await auth.signOut();
-    Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const SigninScreen()),
-        (Route<dynamic> route) => false);
+    Navigator.pushReplacement(context,
+        MaterialPageRoute(builder: (BuildContext context) => SigninScreen()));
     notifyListeners();
   }
 
@@ -187,9 +186,10 @@ class InvoiceController extends ChangeNotifier {
               invoiceData: invoiceData,
               invoiceDocId: invoiceItem!.invoiceDocId!);
           showSnackBar(context: context, text: "Successfully Edited");
-          Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-              (Route<dynamic> route) => false);
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (BuildContext context) => const HomeScreen()));
           notifyListeners();
         } else {
           var invoiceDocId = uuid.v4();
@@ -222,9 +222,11 @@ class InvoiceController extends ChangeNotifier {
           await invoiceService.saveInvoice(
               invoiceData: invoiceData, invoiceDocId: invoiceDocId);
           showSnackBar(context: context, text: "Successfully created");
-          Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-              (Route<dynamic> route) => false);
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (BuildContext context) => const HomeScreen()));
+
           notifyListeners();
         }
       }

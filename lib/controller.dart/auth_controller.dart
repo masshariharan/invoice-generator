@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:invoice_generator/screen/signin_screen.dart';
+import 'package:invoice_generator/screen/signup_screen.dart';
 import 'package:invoice_generator/services/auth_service.dart';
 import 'package:invoice_generator/utils/util.dart';
 import 'package:logger/logger.dart';
@@ -28,6 +29,7 @@ class AuthController extends ChangeNotifier {
     signinEmailController.clear();
     signinPasswordController.clear();
     passwordObsecured = true;
+    notifyListeners();
   }
 
   void clearSignupController() {
@@ -35,6 +37,7 @@ class AuthController extends ChangeNotifier {
     signupEmailController.clear();
     signupPasswordController.clear();
     passwordObsecured = true;
+    notifyListeners();
   }
 
   void passwordVisibilty() {
@@ -55,10 +58,11 @@ class AuthController extends ChangeNotifier {
             .then((value) {
           if (value == "success") {
             Logger().w(value);
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => const HomeScreen()));
 
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
-                (Route<dynamic> route) => false);
             loaderSignin = false;
             clearSigninController();
             notifyListeners();
@@ -92,14 +96,16 @@ class AuthController extends ChangeNotifier {
           if (value == "success") {
             Logger().w(value);
             showSnackBar(context: context, text: "Registration Successful");
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => const SigninScreen()),
-                (Route<dynamic> route) => false);
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => const SigninScreen()));
+
             loaderSignup = false;
             clearSignupController();
             notifyListeners();
           } else {
-            loaderSignin = false;
+            loaderSignup = false;
             notifyListeners();
           }
         });
@@ -110,5 +116,15 @@ class AuthController extends ChangeNotifier {
       notifyListeners();
       Logger().w(e);
     }
+  }
+
+  void navigateToSignupScreen(context) {
+    Navigator.pushReplacement(context,
+        MaterialPageRoute(builder: (BuildContext context) => SignupScreen()));
+  }
+
+  void navigateToSigninScreen(context) {
+    Navigator.pushReplacement(context,
+        MaterialPageRoute(builder: (BuildContext context) => SigninScreen()));
   }
 }

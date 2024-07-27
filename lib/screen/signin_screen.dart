@@ -29,7 +29,7 @@ class _SigninScreenState extends State<SigninScreen> {
                 child: ListView(
                   shrinkWrap: true,
                   children: [
-                    const HeadingText(text: "Login here"),
+                    const HeadingText(text: "Signin here"),
                     const SizedBox(
                       height: 70,
                     ),
@@ -72,8 +72,10 @@ class _SigninScreenState extends State<SigninScreen> {
                         width: double.infinity,
                         child: ReUsableElevatedButton(
                           child: controller.loaderSignin
-                              ? const CircularProgressIndicator(color: AppColors.white,)
-                              : const ButtonText(text: "Login"),
+                              ? const CircularProgressIndicator(
+                                  color: AppColors.white,
+                                )
+                              : const ButtonText(text: "Signin"),
                           onPressed: () => controller.signin(context),
                         ),
                       ),
@@ -86,15 +88,10 @@ class _SigninScreenState extends State<SigninScreen> {
                       children: [
                         const Text("Don't have an account?"),
                         TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SignupScreen()),
-                            );
-                          },
+                          onPressed: () =>
+                              controller.navigateToSignupScreen(context),
                           child: const Text(
-                            "Register",
+                            "Signup",
                             style: TextStyle(
                                 decoration: TextDecoration.underline,
                                 decorationColor: AppColors.blue,

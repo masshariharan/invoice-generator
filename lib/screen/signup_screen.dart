@@ -88,7 +88,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               ? const CircularProgressIndicator(
                                   color: AppColors.white,
                                 )
-                              : const ButtonText(text: "Register"),
+                              : const ButtonText(text: "Signup"),
                           onPressed: () => controller.signup(context),
                         ),
                       ),
@@ -101,13 +101,8 @@ class _SignupScreenState extends State<SignupScreen> {
                       children: [
                         const Text("Already have an account?"),
                         TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SigninScreen()),
-                            );
-                          },
+                          onPressed: () =>
+                              controller.navigateToSigninScreen(context),
                           child: const Text(
                             "Signin",
                             style: TextStyle(
