@@ -8,7 +8,6 @@ class PdfInvoiceGenerator {
   Future<Uint8List> pdfGenerator(Invoice invoice) async {
     final headers = ['Item', 'Quantity', 'Price per item', 'Total'];
     final invoicesData = [...invoice.items.map((e) => e.toList())];
-
     final pdf = Document();
 
     pdf.addPage(Page(build: (Context context) {

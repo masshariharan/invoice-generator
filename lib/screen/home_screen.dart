@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:invoice_generator/controller.dart/invoice_controller.dart';
 import 'package:invoice_generator/models/invoice_model.dart';
-import 'package:invoice_generator/screen/invoice_preview_screen.dart';
 import 'package:invoice_generator/utils/colors.dart';
 import 'package:provider/provider.dart';
-import 'email_input_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,7 +16,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     Future.delayed(Duration.zero, () {
       final controller = Provider.of<InvoiceController>(context, listen: false);
-
       controller.getInvoiceItem();
     });
 
@@ -69,15 +66,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Card(
                           child: ListTile(
                             contentPadding: EdgeInsets.only(left: 15, right: 0),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => InvoicePreviewScreen(
-                                          invoice: invoice,
-                                        )),
-                              );
-                            },
+                            onTap: () =>
+                                controller.navigateToInvoicePreviewScreen(
+                                    context, invoice),
                             title: Text(invoice.to.name),
                             subtitle: Text("Invoice Id: ${invoice.id}"),
                             trailing: PopupMenuButton<int>(
@@ -112,15 +103,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                                 PopupMenuItem(
-                                  onTap: () async {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                EmailInputScreen(
-                                                  invoice: invoice,
-                                                )));
-                                  },
+                                  onTap: () => controller.shareInvoiceToEmail(
+                                      context, invoice),
                                   child: const Row(
                                     children: [
                                       Icon(Icons.email),

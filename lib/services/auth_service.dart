@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import '../models/user_model.dart';
+import '../utils/helper_method.dart';
 import '../utils/util.dart';
 
 class AuthService {
@@ -20,6 +22,7 @@ class AuthService {
         email: email,
         password: password,
       );
+
       await auth.currentUser!.updateDisplayName(userName);
       await auth.currentUser!.verifyBeforeUpdateEmail(email);
       await saveUserData(
@@ -55,7 +58,17 @@ class AuthService {
     String status = '';
     try {
       await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
+          .signInWithEmailAndPassword(email: email, password: password)
+          .then((value) async {
+        var userData = UserModel(
+            name: value.user!.displayName!,
+            email: value.user!.email!,
+            userid: value.user!.uid);
+         
+        Logger().w(userData.toJson());
+        await HelperMethod.saveSigninInfo(userData);
+      });
+
       status = "success";
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
@@ -68,7 +81,7 @@ class AuthService {
         }
       } else {
         if (context.mounted) {
-          showSnackBar(context: context, text: "Please enter correct input");
+          showSnackBar(context: context, text: e.code);
         }
       }
     }
@@ -81,6 +94,6 @@ class AuthService {
       required String email,
       required String userid}) async {
     var userData = UserModel(name: name, email: email, userid: userid);
-    await firestore.collection('users').doc(userid).set(userData.toMap());
+    await firestore.collection('users').doc(userid).set(userData.toJson());
   }
 }

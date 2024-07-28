@@ -16,6 +16,14 @@ class SigninScreen extends StatefulWidget {
 
 class _SigninScreenState extends State<SigninScreen> {
   @override
+  void initState() {
+    final controller = Provider.of<AuthController>(context, listen: false);
+    controller.siginStatus(context);
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<AuthController>(builder: (context, controller, child) {
       return GestureDetector(

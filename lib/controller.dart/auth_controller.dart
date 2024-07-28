@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:invoice_generator/screen/signin_screen.dart';
-import 'package:invoice_generator/screen/signup_screen.dart';
+import 'package:invoice_generator/routes/routes.dart';
 import 'package:invoice_generator/services/auth_service.dart';
+import 'package:invoice_generator/utils/helper_method.dart';
 import 'package:invoice_generator/utils/util.dart';
 import 'package:logger/logger.dart';
 
-import '../screen/home_screen.dart';
 
 class AuthController extends ChangeNotifier {
   AuthService authService = AuthService();
@@ -45,11 +44,27 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void siginStatus(context) async {
+    try {
+      var signinInfo = await HelperMethod.getsigninInfo();
+
+      if (signinInfo.userid.isNotEmpty) {
+        Navigator.pushReplacementNamed(
+          context,
+          Routes.home,
+        );
+      }
+    } catch (e) {
+      Logger().e(e);
+    }
+  }
+
   void signin(context) async {
     try {
       if (formKeySignin.currentState!.validate()) {
         loaderSignin = true;
         notifyListeners();
+
         await authService
             .signinWithEmail(
                 context: context,
@@ -58,10 +73,11 @@ class AuthController extends ChangeNotifier {
             .then((value) {
           if (value == "success") {
             Logger().w(value);
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (BuildContext context) => const HomeScreen()));
+
+            Navigator.pushReplacementNamed(
+              context,
+              Routes.home,
+            );
 
             loaderSignin = false;
             clearSigninController();
@@ -96,10 +112,10 @@ class AuthController extends ChangeNotifier {
           if (value == "success") {
             Logger().w(value);
             showSnackBar(context: context, text: "Registration Successful");
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (BuildContext context) => const SigninScreen()));
+            Navigator.pushReplacementNamed(
+              context,
+              Routes.signin,
+            );
 
             loaderSignup = false;
             clearSignupController();
@@ -119,12 +135,16 @@ class AuthController extends ChangeNotifier {
   }
 
   void navigateToSignupScreen(context) {
-    Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (BuildContext context) => SignupScreen()));
+    Navigator.pushReplacementNamed(
+      context,
+      Routes.signup,
+    );
   }
 
   void navigateToSigninScreen(context) {
-    Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (BuildContext context) => SigninScreen()));
+    Navigator.pushReplacementNamed(
+      context,
+      Routes.signin,
+    );
   }
 }

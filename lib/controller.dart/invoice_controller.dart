@@ -4,16 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:invoice_generator/models/client_model.dart';
 import 'package:invoice_generator/models/company_model.dart';
 import 'package:invoice_generator/models/invoice_model.dart';
-import 'package:invoice_generator/screen/home_screen.dart';
-import 'package:invoice_generator/screen/signin_screen.dart';
+import 'package:invoice_generator/routes/routes.dart';
 import 'package:invoice_generator/services/invoice_service.dart';
 import 'package:invoice_generator/utils/helper_method.dart';
 import 'package:invoice_generator/utils/util.dart';
 import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
-
 import '../models/item_model.dart';
-import '../screen/create_invoice_screen.dart';
+
 
 class InvoiceController extends ChangeNotifier {
   ///company input controller
@@ -104,8 +102,12 @@ class InvoiceController extends ChangeNotifier {
 
   void signout(context) async {
     await auth.signOut();
-    Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (BuildContext context) => SigninScreen()));
+    HelperMethod.clearedPref();
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      Routes.signin,
+      (route) => false,
+    );
     notifyListeners();
   }
 
@@ -122,10 +124,18 @@ class InvoiceController extends ChangeNotifier {
     }
   }
 
+  void shareInvoiceToEmail(context, invoice) {
+    HelperMethod.sendAttachedmail(invoice);
+  }
+
+  void navigateToInvoicePreviewScreen(context, invoice) {
+    Navigator.pushNamed(context, Routes.invoicePreview, arguments: invoice);
+  }
+
   void navigateEditInvoice(
       {required BuildContext context, required Invoice invoice}) {
     var uniqueId = uuid.v4();
-
+    Logger().w(invoice.toJson());
     Logger().w(uniqueId);
     items.clear();
     isEdit = true;
@@ -133,21 +143,17 @@ class InvoiceController extends ChangeNotifier {
     companyEmailController.text = invoice.from.email;
     companyAddressController.text = invoice.from.address;
     companyPhoneController.text = invoice.from.phone;
-    clientNameController.text = invoice.from.name;
-    clientEmailController.text = invoice.from.email;
-    clientPhoneController.text = invoice.from.phone;
-    clientAddressController.text = invoice.from.address;
+    clientNameController.text = invoice.to.name;
+    clientEmailController.text = invoice.to.email;
+    clientPhoneController.text = invoice.to.phone;
+    clientAddressController.text = invoice.to.address;
     invoiceDate = invoice.date;
     invoiceId = invoice.id;
 
     invoiceItem = invoice;
 
     items.addAll(invoice.items);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const CreateInvoiceScreen()),
-    );
+    Navigator.pushNamed(context, Routes.createInvoie);
     notifyListeners();
   }
 
@@ -186,10 +192,9 @@ class InvoiceController extends ChangeNotifier {
               invoiceData: invoiceData,
               invoiceDocId: invoiceItem!.invoiceDocId!);
           showSnackBar(context: context, text: "Successfully Edited");
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) => const HomeScreen()));
+          Navigator.pop(context);
+          clearAll();
+          getInvoiceItem();
           notifyListeners();
         } else {
           var invoiceDocId = uuid.v4();
@@ -222,11 +227,9 @@ class InvoiceController extends ChangeNotifier {
           await invoiceService.saveInvoice(
               invoiceData: invoiceData, invoiceDocId: invoiceDocId);
           showSnackBar(context: context, text: "Successfully created");
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) => const HomeScreen()));
-
+          Navigator.pop(context);
+          clearAll();
+          getInvoiceItem();
           notifyListeners();
         }
       }
@@ -237,9 +240,9 @@ class InvoiceController extends ChangeNotifier {
 
   navigateToInvoiceCreateScreen(context) {
     items.clear();
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(builder: (context) => const CreateInvoiceScreen()),
+      Routes.createInvoie,
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:invoice_generator/utils/colors.dart';
 import 'package:invoice_generator/widgets/input_field_widget.dart';
 import 'package:invoice_generator/widgets/items_table_widget.dart';
 import 'package:invoice_generator/widgets/text_widget.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 class CreateInvoiceScreen extends StatefulWidget {
@@ -15,112 +16,107 @@ class CreateInvoiceScreen extends StatefulWidget {
 
 class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
   @override
-  void dispose() {
-    InvoiceController invoiceController =
-        Provider.of<InvoiceController>(context, listen: false);
-    invoiceController.clearAll();
-
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Consumer<InvoiceController>(builder: (context, controller, child) {
-      return GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: SafeArea(
-          child: Scaffold(
-            appBar: AppBar(
-              backgroundColor: AppColors.blue,
-              title:
-                  Text(controller.isEdit ? "Edit Invoice" : "Create Invoice"),
-              actions: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 5),
-                  child: ElevatedButton(
-                      onPressed: () {
-                        controller.saveInvoice(context);
-                      },
-                      child: const Text("Save")),
-                )
-              ],
-            ),
-            body: Form(
-              key: controller.formKeyInvoice,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: ListView(
-                  shrinkWrap: true,
-                  controller: controller.scrollController,
-                  children: [
-                    CompanyInfoInput(
-                      nameController: controller.companyNameController,
-                      emailController: controller.companyEmailController,
-                      phoneController: controller.companyPhoneController,
-                      addressController: controller.companyAddressController,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    ClientInfoInput(
-                      nameController: controller.clientNameController,
-                      emailController: controller.clientEmailController,
-                      phoneController: controller.clientPhoneController,
-                      addressController: controller.clientAddressController,
-                    ),
-                    ListTile(
-                      contentPadding: EdgeInsets.all(0),
-                      title: const HeadingText(text: "Add List of Items"),
-                      trailing: InkWell(
-                        onTap: () {
-                          showDialog(
-                            barrierDismissible: false,
-                            context: context,
-                            builder: (BuildContext context) {
-                              return CustomAlertDialog(
-                                onPressedSave: () {
-                                  controller.itemsAdd(context);
-                                  FocusScope.of(context).unfocus();
-                                },
-                                nameController: controller.itemNameController,
-                                costController: controller.itemCostController,
-                                quantityController:
-                                    controller.itemQuantityController,
-                              );
-                            },
-                          );
+      return PopScope(
+        onPopInvoked: (didPop) {
+          controller.clearAll();
+        },
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: SafeArea(
+            child: Scaffold(
+              appBar: AppBar(
+                backgroundColor: AppColors.blue,
+                title:
+                    Text(controller.isEdit ? "Edit Invoice" : "Create Invoice"),
+                actions: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 5),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          controller.saveInvoice(context);
                         },
-                        child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 3),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                color: AppColors.blue),
-                            child: const Icon(
-                              Icons.add,
-                              color: AppColors.whiteGrey,
-                            )),
+                        child: Text(controller.isEdit ? "update" : "Save")),
+                  )
+                ],
+              ),
+              body: Form(
+                key: controller.formKeyInvoice,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: ListView(
+                    shrinkWrap: true,
+                    controller: controller.scrollController,
+                    children: [
+                      CompanyInfoInput(
+                        nameController: controller.companyNameController,
+                        emailController: controller.companyEmailController,
+                        phoneController: controller.companyPhoneController,
+                        addressController: controller.companyAddressController,
                       ),
-                    ),
-                    controller.items.isNotEmpty
-                        ? Table(
-                            border: TableBorder.all(),
-                            children: [
-                              headerRowTable(),
-                              ...controller.items.map((itemx) => customRowTable(
-                                  item: itemx,
-                                  onPressed: () {
-                                    controller.removeItem(itemx);
-                                  }))
-
-                              //customRowTable(item)
-                            ],
-                          )
-                        : Container(),
-                    const SizedBox(
-                      height: 35,
-                    )
-                  ],
+                      SizedBox(
+                        height: 10,
+                      ),
+                      ClientInfoInput(
+                        nameController: controller.clientNameController,
+                        emailController: controller.clientEmailController,
+                        phoneController: controller.clientPhoneController,
+                        addressController: controller.clientAddressController,
+                      ),
+                      ListTile(
+                        contentPadding: EdgeInsets.all(0),
+                        title: const HeadingText(text: "Add List of Items"),
+                        trailing: InkWell(
+                          onTap: () {
+                            showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return CustomAlertDialog(
+                                  onPressedSave: () {
+                                    controller.itemsAdd(context);
+                                    FocusScope.of(context).unfocus();
+                                  },
+                                  nameController: controller.itemNameController,
+                                  costController: controller.itemCostController,
+                                  quantityController:
+                                      controller.itemQuantityController,
+                                );
+                              },
+                            );
+                          },
+                          child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 3),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: AppColors.blue),
+                              child: const Icon(
+                                Icons.add,
+                                color: AppColors.whiteGrey,
+                              )),
+                        ),
+                      ),
+                      controller.items.isNotEmpty
+                          ? Table(
+                              border: TableBorder.all(),
+                              children: [
+                                headerRowTable(),
+                                ...controller.items
+                                    .map((itemx) => customRowTable(
+                                        item: itemx,
+                                        onPressed: () {
+                                          controller.removeItem(itemx);
+                                        }))
+                              ],
+                            )
+                          : Container(),
+                      const SizedBox(
+                        height: 35,
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),

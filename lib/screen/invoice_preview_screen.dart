@@ -18,7 +18,6 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       body: FutureBuilder(
           future: PdfInvoiceGenerator().pdfGenerator(widget.invoice),
           builder: (context, snapshot) {

@@ -1,3 +1,5 @@
+//this email controller currently not using
+
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -21,7 +23,8 @@ class EmailController extends ChangeNotifier {
 
   Future<String> savePdfFile(Uint8List fileBytes, String fileName) async {
     final directory = await getApplicationDocumentsDirectory();
-    final filePath = '${directory.path}/$fileName';
+    final filePath = '${directory.path}/$fileName.pdf';
+
     final file = File(filePath);
     await file.writeAsBytes(fileBytes);
     return filePath;
